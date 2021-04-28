@@ -1,9 +1,9 @@
 {
     "development": {
-        "username": "root",
+        "username": "process.env.DB_USER",
         "password": null,
-        "database": "quan_ly_kh",
-        "host": "localhost",
+        "database": "process.env.DB_NAME",
+        "host": "process.env.DB_HOST",
         "dialect": "mysql"
     },
     "test": {
