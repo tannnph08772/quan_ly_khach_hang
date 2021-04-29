@@ -12,8 +12,13 @@ exports.getProfile = async(req, res, next) => {
 
 exports.updateProfile = async(req, res, next) => {
     const newProfile = await User.findOne({ where: { id: req.value.params.id } });
+    if (!req.file) {
+        image = newProfile.image;
+    } else {
+        image = req.file.path
+    }
     newProfile.update({
-        image: req.file.path,
+        image,
         username: req.value.body.username,
         name: req.value.body.username,
         email: req.value.body.email,
