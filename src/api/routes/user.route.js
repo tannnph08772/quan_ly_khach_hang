@@ -5,5 +5,6 @@ const upload = require('../middlewares/uploadImage.middleware');
 
 router.post('/update-profile/:id', validateParam(schemas.idSchema, 'id'), validateBody(schemas.userSchema), userController.updateProfile);
 router.get('/profile/:id', upload.single('image'), userController.getProfile);
+router.get('/list-users', userController.getAllUser);
 
 module.exports = router;

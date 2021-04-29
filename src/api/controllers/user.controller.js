@@ -1,4 +1,9 @@
-const User = require('../models/user.model')
+const User = require('../models/user.model');
+
+exports.getAllUser = async(req, res, next) => {
+    const allUser = await User.findAll()
+    return res.json({ allUser })
+}
 
 exports.getProfile = async(req, res, next) => {
     const myProfile = await User.findByPk(req.params.id)
