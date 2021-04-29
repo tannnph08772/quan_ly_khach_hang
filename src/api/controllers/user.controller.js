@@ -1,6 +1,7 @@
 const User = require('../models/user.model');
 
 exports.getAllUser = async(req, res, next) => {
+    // 1. phần này người dùng cần có thể tìm kiếm theo các điều kiện họ muốn
     const allUser = await User.findAll()
     return res.json({ allUser })
 }
@@ -11,7 +12,10 @@ exports.getProfile = async(req, res, next) => {
 }
 
 exports.updateProfile = async(req, res, next) => {
+    // 1. những chỗ như này em nên làm 1 middleware dùng chung để tránh việc phải viết lại nhiều lần
     const newProfile = await User.findOne({ where: { id: req.value.params.id } });
+    
+    // 2. Phần upload ảnh này em nên làm 1 api riêng để upload và nhả link lại
     if (!req.file) {
         image = newProfile.image;
     } else {
