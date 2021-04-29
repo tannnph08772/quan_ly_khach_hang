@@ -12,7 +12,7 @@ const encodedToken = (id) => {
 
 exports.register = async(req, res, next) => {
     try {
-        const user = await User.create({
+        const userCreate = await User.create({
             image: req.file.path,
             username: req.value.body.username,
             name: req.value.body.username,
@@ -27,39 +27,33 @@ exports.register = async(req, res, next) => {
             district: req.value.body.district,
             ward: req.value.body.ward
         })
-        const token = encodedToken(user.id)
+        const token = encodedToken(userCreate.id)
 
         res.setHeader('Authorization', token)
-        return res.json(user)
+        return res.json(userCreate)
     } catch (error) {
         return res.send(error)
     }
 }
 
 exports.forgotPassword = async(req, res, next) => {
-    var email = await User.findOne({ where: { email: req.body.email } });
-    if (email == null) {
-        return res.json({ status: 'ok' });
-    }
+    const getUser = await User.findOne({ where: { email: req.body.email } });
 
-    await ResetToken.update({
-        used: 1
-    }, {
-        where: {
-            email: req.body.email
+    const token = jwt.sign({ id: getUser.id }, process.env.JWT_SECRET, { expiresIn: "10m" });
+    const link = `http://localhost:3000/api/auth/reset-password/${getUser.id}/${token}`
+    return res.json({ link, token });
+}
+
+exports.resetPassword = async(req, res, next) => {
+    const getUser = await User.findOne({ where: { id: req.params.id } })
+    const { password, passwordConfirm } = req.body;
+    try {
+        if (password !== passwordConfirm) {
+            return res.send('vui lòng nhập đúng mật khẩu!')
         }
-    });
-
-    var expireDate = new Date();
-    expireDate.setDate(expireDate.getDate() + 1 / 24);
-
-    await ResetToken.create({
-        email: req.body.email,
-        expiration: expireDate,
-        // token: token,
-        used: 0
-    });
-
-
-    return res.json({ status: 'ok' });
+        getUser.update({ password })
+        return res.json({ payload });
+    } catch (error) {
+        return res.json(error)
+    }
 }

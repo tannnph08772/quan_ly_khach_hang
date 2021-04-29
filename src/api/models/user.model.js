@@ -1,8 +1,6 @@
 const sequelize = require('../../../database/connection');
 const Sequelize = require('sequelize');
 const bcrypt = require('bcrypt');
-const events = require('events');
-const eventEmitter = new events.EventEmitter();
 
 const User = sequelize.define("users", {
     id: {
@@ -64,21 +62,22 @@ const User = sequelize.define("users", {
         type: Sequelize.STRING,
         allowNull: false
     }
+}, {
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
+    deletedAt: 'soft_delete',
+    paranoid: true,
+    timestamps: true,
 });
 
-eventEmitter.on('clicked', async() => {
-    User.beforeCreate(async(user, options) => {
-        const hashedPassword = await bcrypt.hash(user.password, 10);
-        user.password = hashedPassword;
-    });
-})
-eventEmitter.on('clicked', async() => {
-    User.beforeUpdate(async(users, options) => {
-        const newPassword = await bcrypt.hash(users.password, 10);
-        users.password = newPassword;
-    });
-})
+User.beforeCreate(async(user, options) => {
+    const hashedPassword = await bcrypt.hash(user.password, 10);
+    user.password = hashedPassword;
+});
 
-eventEmitter.emit('clicked')
+User.beforeUpdate(async(users, options) => {
+    const newPassword = await bcrypt.hash(users.password, 10);
+    users.password = newPassword;
+});
 
 module.exports = User;

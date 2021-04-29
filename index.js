@@ -5,6 +5,7 @@ const port = 3000;
 const bodyParser = require('body-parser');
 const path = require('path');
 const router = require('./src/api/routes/index.route');
+const user = require('./src/api/models/user.model')
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }))
