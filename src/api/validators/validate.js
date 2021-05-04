@@ -10,7 +10,8 @@ const validateBody = (schema) => {
             if (!req.value) req.value = {}
             if (!req.value['params']) req.value.params = {}
 
-            req.value.body = validatorResult.value
+            req.value.body = validatorResult.value;
+            console.log(req.value.body)
             next()
         }
     }
@@ -42,6 +43,7 @@ const schemas = {
         email: Joi.string(),
         phone: Joi.string().trim().regex(/((09|03|07|08|05)+([0-9]{8})\b)/).required(),
         birthday: Joi.required(),
+        image: Joi.required(),
         sex: Joi.required(),
         address: Joi.string().trim().min(2).required(),
         demands: Joi.string().trim().min(2).required(),

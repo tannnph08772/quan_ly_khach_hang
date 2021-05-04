@@ -1,4 +1,4 @@
-const User = require('../models/user.model')
+const User = require('../models/user.model');
 const jwt = require('jsonwebtoken');
 
 const encodedToken = (id) => {
@@ -12,21 +12,7 @@ const encodedToken = (id) => {
 
 exports.register = async(req, res, next) => {
     try {
-        const userCreate = await User.create({
-            image: req.file.path,
-            username: req.value.body.username,
-            name: req.value.body.username,
-            email: req.value.body.email,
-            password: req.value.body.password,
-            phone: req.value.body.phone,
-            address: req.value.body.address,
-            birthday: req.value.body.birthday,
-            sex: req.value.body.sex,
-            province: req.value.body.province,
-            demands: req.value.body.demands,
-            district: req.value.body.district,
-            ward: req.value.body.ward
-        })
+        const userCreate = await User.create(req.value.body)
         const token = encodedToken(userCreate.id)
 
         res.setHeader('Authorization', token)

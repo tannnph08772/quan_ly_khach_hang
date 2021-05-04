@@ -1,56 +1,37 @@
 const User = require('../models/user.model');
 
+
 exports.getAllUser = async(req, res, next) => {
-    // 1. phần này người dùng cần có thể tìm kiếm theo các điều kiện họ muốn
     const allUser = await User.findAll()
     return res.json({ allUser })
 }
 
 exports.getProfile = async(req, res, next) => {
-    const myProfile = await User.findByPk(req.params.id)
+    const myProfile = req.locals;
     return res.json({ myProfile })
 }
 
 exports.updateProfile = async(req, res, next) => {
-    // 1. những chỗ như này em nên làm 1 middleware dùng chung để tránh việc phải viết lại nhiều lần
-    const newProfile = await User.findOne({ where: { id: req.value.params.id } });
-    
-    // 2. Phần upload ảnh này em nên làm 1 api riêng để upload và nhả link lại
-    if (!req.file) {
-        image = newProfile.image;
-    } else {
-        image = req.file.path
-    }
-    newProfile.update({
-        image,
-        username: req.value.body.username,
-        name: req.value.body.username,
-        email: req.value.body.email,
-        password: req.value.body.password,
-        phone: req.value.body.phone,
-        address: req.value.body.address,
-        birthday: req.value.body.birthday,
-        sex: req.value.body.sex,
-        province: req.value.body.province,
-        demands: req.value.body.demands,
-        district: req.value.body.district,
-        ward: req.value.body.ward
-    })
+    const newProfile = req.locals;
+
+    newProfile.update(
+        req.value.body
+    )
     return res.send("Updated!")
 }
 
 exports.softDeleteUser = async(req, res, next) => {
-    await User.destroy({ where: { id: req.value.params.id } });
+    req.locals.destroy();
     res.send('User deleted!')
 }
 
 exports.deleteUser = async(req, res, next) => {
-    await User.destroy({ where: { id: req.value.params.id }, force: true });
+    await User.destroy({ where: { id: req.params.id }, force: true });
     return res.send("Deleted user!")
 }
 
-exports.restoreUser = async(req, res, next) => {
-    await User.restore({ where: { id: req.value.params.id } });
+exports.restoreUser = (req, res, next) => {
+    req.locals.restore();
 
     return res.send("User restored !")
 }
@@ -61,6 +42,13 @@ exports.getSoftDelUser = async(req, res, next) => {
 }
 
 exports.getInfoUserDeleted = async(req, res, next) => {
-    const infoUserDeleted = await User.findByPk(req.value.params.id, { paranoid: false })
+    const infoUserDeleted = await User.findByPk(req.params.id, { paranoid: false })
     return res.json({ infoUserDeleted })
+}
+
+exports.search = async(req, res, next) => {
+    const result = await User.findAll({
+        where: req.query
+    })
+    return res.json({ result })
 }
